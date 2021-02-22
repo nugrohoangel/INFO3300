@@ -1,0 +1,78 @@
+<html>
+<head>
+  <link rel="stylesheet" type="text/css" href="style.css">
+  </head>
+<body>
+  <h2> Angel Nugroho akn35 </h2>
+  <h2> INFO 3300 HW1 </h2>
+
+<p id="p1">
+   Problem 1
+   <span>a) Marks: counties, Channels: different color hues </span>
+   <span>b) Marks: Blue rectangles, Channels: vertical aligned length and horizontal aligned position</span>
+   <span>c) Marks: Dots, Channels: different color hues, vertical and horizontal aligned positions</span>
+</p>
+
+<p id='p2'>
+  Problem 2
+<span> a) number: a canonical js type </span>
+ <span>b) int: not a type </span>
+<span> c) unicode: not a type </span>
+ <span>d) array: not a type </span>
+ <span>e) char: not a type </span>
+<span> f) class: not a type </span>
+ <span>g) regex: not a type </span>
+ <span>h) string: canonical type </span>
+<span> i) boolean: canonical type </span>
+ <span>j) object: canonical type, In javascript, many things are identified as objects using typeof().
+Functions are also objects, but actually print as functions.
+Objects are also dictionaries, which means you can add a key value pair to something like a list.</span>
+
+<span>k) null: a canonical type. Null is its own object in javascript, but using typeof() will retun Object.</span>
+<span>l) function: not a type</span>
+<script>
+  console.log( typeof(3));
+  console.log( typeof("hello"));
+  console.log( typeof(true));
+  console.log( typeof(new Object()));
+  console.log( typeof(console.log));
+  console.log( typeof(null));
+</script>
+
+<p id='p3'>
+  <span>Problem 3 </span>
+  Type coercion is javascript forcing variables to become
+  a different type to prevent an error being thrown.
+  Javascript will cast things into a different type as best as possible
+  in scenarios where having different types would normally stop the running of a script. </span>
+
+  <span>Ex 1: When adding a number 3 to the string "4",
+  instead of an error where we can't use the add operator on a string,
+  we instead get the output "34," the number 2 being coerced into a string.
+  In python this would usually error because you can't add strings and ints.</span>
+  <span>Ex 2: If we try adding together an array and a number, both types will be
+  coerced into a string, rather than erroring. The two strings are then put together.
+  In python this sort of statement would also error because of the different types. </span>
+
+  <script>
+  console.log("3" + 4)
+  console.log( [5, 2, 8] + 2);
+  </script>
+
+  </p>
+
+  <p id= 'p4'>
+    <span>Problem 4 </span>
+    <span>Late submissions will receive no credit. 5 slips days
+    are given to extend the due date of an assignment.
+    These slip days are automatically tracked,
+    and up to three of them can be used per late submission.
+    If you overextend your slip days they will not be deducted
+    but you will receive a 0 for the assignment. Each slip day allows
+    another 24 hour window starting from the deadline. You do not need to notify
+    staff if using a slip day.
+    Work that is unreadable, like missing files, uncompressed, or cannot
+    be graded by staff will receive a 0.</span>
+
+
+</body></html>
