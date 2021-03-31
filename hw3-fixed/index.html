@@ -1,0 +1,140 @@
+<html>
+<head>
+  <link rel="stylesheet" type="text/css" href="style.css">
+  <script src="https://d3js.org/d3.v6.min.js"></script>
+  </head>
+<body>
+  <h3> Angel Nugroho akn35 </h3>
+  <h3> INFO 3300 HW1 </h3>
+
+  <ul>
+    <li>This is a divergent color scale.
+      It is not an effective scale because the middle is not neutral, but instead a prominent blue.</li>
+    <li> This is not an effective color scale. Since the data has a natural middle (neutral sentiment)
+      it makes sense to use a divergent color scale, not a sequential one. </li>
+    <li>Tritanomaly and Tritanopia would cause a loss of perceivable hue variation.</li>
+    <li>I would not recommend that they use the rainbow color scale since it is not perceptually uniform.
+    The data is continuous and numeric, so they should only vary hue slightly, and use other channels like
+    luminosity or saturation.</li>
+  </ul>
+
+  <p>
+    <svg id="plot" height=240 width=240 style="margin-left: 20px; border: 1px solid lightgrey; margin-top: 20px">
+      <!-- plotted grid -->
+    </svg>
+
+    <script id="plot">
+    const data = [{"x":1.0 ,"y":1.0}, {"x":2.0 ,"y":2.0},
+    {"x":3.0 ,"y":3.5}, {"x":4.0 ,"y":4.5}, {"x":5.0 ,"y":5.0},
+    {"x":6.0 ,"y":5.5}, {"x":7.0 ,"y":6.0}, {"x":8.0 ,"y":7.5},{"x":9.0 ,"y":9.0}];
+
+    let svg = d3.select("svg#plot");
+    let width = svg.attr("width");
+    let height = svg.attr("height");
+    let axis_marks = [10, 5, 0];
+
+    let xscale = d3.scaleLinear()
+                    .domain([0,10])
+                    .range([20, height-20]);
+
+    let yscale = d3.scaleLinear()
+                  .domain([0,10])
+                  .range([width-20, 20]);
+
+    for (let line = 1; line < 12; line++) {
+      //console.log(line);
+      //console.log(h);
+      svg.append('line')
+          .attr("x1", 20)
+          .attr("x2", 220)
+          .attr("y1", line*20)
+          .attr("y2", line*20)
+          .style("stroke", 'dimgray')
+          .style("stroke-width", 1);
+      if ((line-1)%5 == 0) {
+        svg.append('text')
+            .text((line-1).toString())
+            .style("font-size", "15px")
+            .style("text-anchor", "middle")
+            .style('font-family', "Arial")
+            .attr("x", 10)
+            .attr("y", 243 - line*20 );
+      }
+    };
+
+    for (let line = 1; line < 12; line++) {
+      //console.log("is this working");
+      //console.log(h);
+      svg.append('line')
+          .attr("x1", line*20)
+          .attr("x2", line*20)
+          .attr("y1", 20)
+          .attr("y2", 220)
+          .style("stroke", 'dimgray')
+          .style("stroke-width", 1);
+      if ((line-1)%5 == 0) {
+        svg.append('text')
+            .text((line-1).toString())
+            .style("font-size", "15px")
+            .style("text-anchor", "middle")
+            .style('font-family', "Arial")
+            .attr("x", line*20)
+            .attr("y", 235 );
+      }
+    };
+
+    data.forEach((d, i) => {
+      svg.append("circle")
+          .attr("r", 4)
+          .attr("cx", xscale(d["x"]))
+          .attr("cy", yscale(d['y']))
+          .style("fill", "darkblue");
+
+    });
+
+    </script>
+  </p>
+
+<p>
+  <svg id="ncaa" height=500 width=500 style="margin-left: 20px; background-color: black; margin-top: 20px">
+  </svg> <br/>
+  <script>
+    svg = d3.select("svg#ncaa")
+    width = svg.attr("width");
+    height = svg.attr("height");
+
+    d3.csv("NCAA_shots.csv").then(data => {
+
+      data.forEach ((d,i) => {
+        d['x'] = Number(d['x'])*5
+        d['y'] = Number(d['y'])*5
+        d['h'] = Number(d['height'])*5
+        d['w'] = Number(d['width'])*5
+      });
+      console.log(data)
+
+      const attemptExtent = d3.extent(data, d => d['log_attempt']);
+      console.log(attemptExtent);
+      let attemptScale = d3.scaleSequential().domain(attemptExtent).interpolator(d3.interpolateInferno);
+
+      console.log(attemptScale(0))
+      data.forEach ((d) => {
+        svg.append("rect")
+            .attr("x", d['x'])
+            .attr("y", d['y'])
+            .attr('width', d['w'])
+            .attr('height', d['h'])
+            .style("fill", attemptScale(d.log_attempt));
+
+      });
+
+    });
+  </script>
+  The logarithmic scale above lets us see the whole range of the data uniformly, instead of just the larger data points.
+  However, compared to the linear scale we don't easily apprehend the magnitude of the data, like the fact
+  that there are far more attempts closer to the net compared to farther away.
+</p>
+
+
+</body>
+</html>

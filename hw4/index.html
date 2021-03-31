@@ -1,0 +1,201 @@
+<html>
+<head>
+  <link rel="stylesheet" type="text/css" href="style.css">
+  <script src="https://d3js.org/d3.v6.min.js"></script>
+  <style>
+
+    .label {
+      font-family: Arial;
+      font-size: 12px;
+      font-weight: bold;
+    }
+
+     .scatterLegend {
+      font-family: Arial;
+      margin-left: 50px;
+    }
+
+    .scatterLegend span {
+      margin-right: 15px;
+    }
+
+    .gridlines line {
+      stroke: #bbb;
+    }
+
+    .gridlines .domain {
+      stroke: none;
+    }
+
+  </style>
+  </head>
+<body>
+  <h3> Angel Nugroho akn35 </h3>
+  <h3> INFO 3300 HW1 </h3>
+
+<p>
+</p>
+<svg id="scatterplot" height="500" width="800" style="margin-top:50px" >
+  <text id="label" class="label" text-anchor="middle" alignment-baseline="center"></text>
+
+
+</svg>
+<div id="scatterLegend" class="scatterLegend"> </div>
+  <script>
+  const svg = d3.select("svg#scatterplot");
+
+  const width = svg.attr("width");
+  const height = svg.attr("height");
+  const margin = {top: 10, right: 10, bottom: 50, left: 50};
+
+  const chartWidth = width - margin.left - margin.right;
+  const chartHeight = height - margin.top - margin.bottom;
+
+  let elements = svg.append("g").attr("id","elements")
+                                .attr("transform","translate("+margin.left+","+(margin.top)+")");
+  let main_chart = svg.append("g").attr("id", "main_chart")
+                                  .attr("transform", "translate("+margin.left+","+(margin.top)+")");
+
+  function jitter() {
+    return Math.random() * (4 + 4) - 4;
+  }
+
+
+  d3.json("wines.json", d3.autoType )
+    .then( (data) => {
+      //console.log(data)
+    wine_states = ['New York', 'Washington', 'Oregon','California']
+    data = data.filter((d) => { return d['price'] > 0 && d['points'] > 0 && wine_states.includes(d['state']) && d['title'] != "";} )
+
+  data.forEach((d) => {
+    d["price"] = Number( d['price'].replace(/,/g, "").replace(/\$/g,""));
+    d["points"] = Number( d['points']);
+  });
+  console.log(data.length)
+    const priceExtent = d3.extent(data, d => d.price );
+    const pointExtent = d3.extent(data, d=> d.points);
+    const priceScale = d3.scaleLog().domain(priceExtent).range([0, chartWidth]);
+    const pointScale = d3.scaleLinear().domain(pointExtent).range([chartHeight, 0]);
+
+
+    let stateScale = d3.scaleOrdinal(d3.schemeCategory10);
+
+    let leftAxis = d3.axisLeft(pointScale);
+    let leftGridlines = d3.axisLeft(pointScale).tickFormat("").tickSize(-chartWidth-10);
+
+    let bottomAxis = d3.axisBottom(priceScale).tickFormat(d3.format("$"));
+    let bottomGridlines = d3.axisBottom(priceScale).tickFormat("").tickSize(-chartHeight-10);
+
+    elements.append("g").attr("class", "y axis")
+              .attr("transform", "translate(" + (margin.left-30)+", "+(margin.top)+")")
+              .call(leftAxis);
+
+    elements.append("g").attr("class", "bottom axis")
+              .attr("transform", "translate(" + (margin.left-30)+", "+(margin.top+chartHeight)+")")
+              .call(bottomAxis);
+
+    data.forEach( (d,i) => {
+    let circle = main_chart.append("circle")
+                          .attr("cx", priceScale(d.price)+jitter())
+                          .attr("cy", pointScale(d.points)+jitter())
+                          .attr("r", 4)
+                          .attr("fill", stateScale(d.state))
+                          .attr("index", i)
+                          .attr("state", d.state)
+                          .attr("opacity", 0.7)
+                          .attr("transform", "translate(" + (margin.left)+")");
+
+    circle.on("mouseover", function() {
+      d3.select(this).raise()
+                      .transition().duration(200)
+                      .attr("r", 4+3)
+                      .attr("opacity", 1);
+      d3.select("#label").text(d.title).raise()
+                          .attr("x", priceScale(d.price))
+                          .attr("y", pointScale(d.points)+30);
+    })
+
+    circle.on("mouseout", function() {
+      d3.select(this).transition().duration(200)
+                      .attr("r", 4);
+      d3.select("#label").text("");
+    })
+    });
+    d3.select("#scatterLegend").append("span").text("State legend:")
+                    .attr("x", margin.left+5)
+                    .attr("y", margin.top+chartHeight+35)
+                    .style("font-size", "16px")
+                    .style("font-family", "Arial")
+                    .style("font-weight", "bold")
+                    .style("text-decoration", "underline");
+    stateScale.domain().forEach((d,i) =>{
+    let legend_key = d3.select("#scatterLegend").append("span")
+                        .text(d)
+                        .style("color", stateScale(d));
+
+    legend_key.on("mouseover", function() {
+        d3.selectAll("#scatterplot circle").each( function() {
+          let element = d3.select(this);
+          //console.log(element);
+          let state = element.attr("state")
+          //console.log(state);
+          //console.log(d);
+          if (state === d) {
+            element.attr("opacity", "1.0")
+          }
+          else {
+            element.attr("opacity", "0.2")
+          }
+        });
+      });
+
+    });
+  let clear_button = d3.select('#scatterLegend').append("span")
+                        .text("Clear")
+                        .style("color", "black")
+                        .style("font-family", "Arial")
+                        .style("border-style", "groove");
+  clear_button.on("mouseover", function() {
+      d3.selectAll("#scatterplot circle").each( function() {
+        let element = d3.select(this);
+        let state = element.attr("state");
+        element.attr("opacity", "0.7");
+
+      });
+    });
+  });
+  </script>
+
+</div>
+<p>A. I removed 61 items from the original dataset, changing the length of the array from 906 to 845.
+  The data issues included wines from nonexistent states, prices that were negative or undefined,
+  and point values that were negative or undefined. All of these points were removed since we only want
+  points that are valid for the attributes we want to show (states, price, and points).
+  I also further cleaned the data by removing notation like dollar signs or commas from the price values.
+</p>
+<p>B. For the axes of this graph I used a linear scale for the point values and a log scale for the x values.
+  I used a log scale for the prices to better capture the full range of the price data since most of the points are between
+  10 and 40 dollars. A linear scale was suitable for the points values since this attribute has a more even distribution.
+  I also elected not to use gridlines since there were already a lot of datapoints, and the labels would appear
+  on the graph for each point, so I wanted to reduce clutter. I also use different color shades for the states since
+  we're working with ordinal data. 
+</p>
+<p>C. For the plotted circles, I gave them a radius of 4 and opacity of 0.7. They are big enough for the user to hover over,
+  but not too big that they overlap a lot with other points. With a 0.7 opacity, overlapping circles can be seen, and leaves enough room
+  to adjust opacity on other iteractions, like the legend. The jitter function also helps keep the circles separate by reducing overlap, making
+  it easier to hover over a single point. However, when we move the circles slightly we do misrepresent the data,
+  where some points are actually much closer in points than is displayed.
+</p>
+<p>D. In my graph's circle interactions, I had the circle grow slightly and become full opacity. This helps the
+  user know which dot is being selected and also see the wine title to put in context of the price, point value, and location.
+  However, when there are a lot of dots congregated in one place, it can be harder to tell which dot is being chosen.
+  For this I also made sure the text title was raised and bolded so it could be seen over top the other dots. There are some trade-offs
+  with putting the title near the dot instead of in just one place. For this chart, longer titles tend to get cut off for a dot close to the
+  edges of the SVG.
+</p>
+<p>E. For this section I added the chart labels and and clear button. I changed the font to match the rest of the table
+  and set the margins so the legend would start where the graph starts. I also added a border around the span for "clear"
+  so it would be distinct to the user apart from the legend.
+</p>
+</body>
+</html>

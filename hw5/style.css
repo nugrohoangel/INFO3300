@@ -1,0 +1,17 @@
+
+ul li{
+  font-family: sans-serif;
+}
+ul {
+  width: 800px;
+}
+p {
+  font-family: sans-serif;
+  width: 800px;
+}
+p span {
+  display: block;
+}
+h3 {
+  font-family: sans-serif;
+}
