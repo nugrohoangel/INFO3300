@@ -1,0 +1,75 @@
+<html><head>
+<title>INFO 3300 - March 29</title>
+
+  <link rel="stylesheet" type="text/css" href="style.css">
+
+  <script src="https://d3js.org/d3.v6.min.js"></script>
+  <script src="https://d3js.org/topojson.v3.min.js"></script>
+
+  <style>
+  </style>
+
+</head>
+<body>
+  <h3> Angel Nugroho akn35 </h3>
+  <h3> INFO 3300 HW5 </h3>
+
+  <p>Problem 1</p>
+  <svg id="choropleth" height="620" width="800" style="margin:20px" />
+
+  </svg>
+
+
+  <script>
+    const getData = async function() {
+
+      const svg = d3.select("svg#choropleth");
+      const width = svg.attr("width");
+      const height = svg.attr("height");
+      const margin = { top: 10, right: 10, bottom: 10, left:10};
+      const mapWidth = width - margin.left - margin.right;
+      const mapHeight = height - margin.top - margin.bottom;
+
+      const nyb = await d3.json("ny_state_biodiversity.json");
+      console.log(nyb);
+      var counties = topojson.feature(nyb, nyb.objects.counties);
+      var countiesMesh = topojson.mesh(nyb, nyb.objects.counties);
+      var stateMesh = topojson.mesh(nyb, nyb.objects.state);
+      var projection = d3.geoMercator().fitSize([mapWidth, mapHeight], counties); //check this?
+      var path = d3.geoPath().projection(projection)
+      var coordinates = projection([-76.4850, 42.4476])
+
+      let colorArray = ['#d7191c', '#f08168', '#ffffbf', '#abd9e9', '#2c7bb6']
+      let colorScale = d3.scaleQuantile().domain(nyb.Total_Biodiversity_allvalues).range(colorArray);
+
+      svg.selectAll("path.counties").data(counties.features)
+            .join("path")
+            .attr("class", "counties")
+            .attr("fill", d=> colorScale(d.properties['Total_Biodiversity']))
+            .attr("stroke", "none")
+            .attr("d", path);
+
+      svg.append("path").datum(countiesMesh)
+            .attr("fill", "none")
+            .attr("stroke", "white")
+            .attr("stroke-width", "1px")
+            .attr("d", path);
+      svg.append("path").datum(stateMesh)
+            .attr("fill", "none")
+            .attr("stroke", "#5e6063")
+            .attr("stroke-width", "3px")
+            .attr("d", path);
+
+      svg.append("circle")
+            .attr("fill", "black")
+            .attr("cx", coordinates[0])
+            .attr("cy", coordinates[1])
+            .attr("r", 5)
+
+    }
+    getData();
+
+  </script>
+
+</body>
+</html>
